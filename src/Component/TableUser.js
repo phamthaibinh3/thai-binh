@@ -6,6 +6,7 @@ import ModalAddNew from './ModalAddNew';
 import ModalEditUser from './ModalEditUser';
 import _, { findIndex } from 'lodash'
 import ModalConfirm from './ModalConfirm';
+import './TableUser.scss'
 
 const TableUser = (props) => {
 
@@ -14,11 +15,14 @@ const TableUser = (props) => {
     const [totalPages, setTotalPages] = useState(0);
 
     const [isShowModalAddNew, setIsShowModalAddNew] = useState(false);
-    const [isShowModalEdit,setIsShowModalEdit] = useState(false);
-    const [dataUserEdit,setDataEdit] = useState({});
+    const [isShowModalEdit, setIsShowModalEdit] = useState(false);
+    const [dataUserEdit, setDataEdit] = useState({});
 
-    const [isShowModalDelete,setIsShowModalDelete] = useState(false)
-    const [dataUserDelete,setDataUserDelete] = useState({});
+    const [isShowModalDelete, setIsShowModalDelete] = useState(false)
+    const [dataUserDelete, setDataUserDelete] = useState({});
+
+    const [sortBy, setSortBy] = useState('asc');
+    const [sortField, setSortField] = useState('id');
 
     useEffect(() => {
         getUser(totalPages)
@@ -38,7 +42,7 @@ const TableUser = (props) => {
     }
 
     const handleUpdateTable = (user) => {
-        setListUser([user,...listUser])
+        setListUser([user, ...listUser])
     }
 
     const getUser = async (page) => {
@@ -77,6 +81,15 @@ const TableUser = (props) => {
         setListUser(cloneListUser)
     }
 
+    const handleSort = (sortBy, sortField) => {
+        setSortBy(sortBy);
+        setSortField(sortField);
+
+        let cloneListUser = _.cloneDeep(listUser);
+        cloneListUser = _.orderBy(cloneListUser, [sortField], [sortBy]);
+        setListUser(cloneListUser);
+    }
+
     return (
         <>
             <div className='my-3 add-new'>
@@ -86,9 +99,39 @@ const TableUser = (props) => {
             <Table striped bordered hover>
                 <thead>
                     <tr>
-                        <th>Id</th>
+                        <th>
+                            <div className='sort-header'>
+                                <span>ID</span>
+                                <span>
+                                    <i
+                                        className='fa-solid fa-arrow-down-long'
+                                        onClick={() => handleSort("desc", "id")}
+                                    ></i>
+                                    <i
+                                        className='fa-solid fa-arrow-up-long'
+                                        onClick={() => handleSort("asc", "id")}
+                                    ></i>
+                                </span>
+                            </div>
+                            ID
+                            <i className='fas fa-heart'></i>
+                        </th>
                         <th>Email</th>
-                        <th>First Name</th>
+                        <th>
+                        <div className='sort-header'>
+                                <span>First name</span>
+                                <span>
+                                    <i
+                                        className='fa-solid fa-arrow-down-long'
+                                        onClick={() => handleSort("desc", "first_name")}
+                                    ></i>
+                                    <i
+                                        className='fa-solid fa-arrow-up-long'
+                                        onClick={() => handleSort("asc", "first_name")}
+                                    ></i>
+                                </span>
+                            </div>
+                        </th>
                         <th>Last Name</th>
                         <th>Actions</th>
                     </tr>
@@ -116,19 +159,19 @@ const TableUser = (props) => {
             <ModalAddNew
                 show={isShowModalAddNew}
                 handleClose={handleClose}
-                handleUpdateTable = {handleUpdateTable}
+                handleUpdateTable={handleUpdateTable}
             />
             <ModalEditUser
-                show = {isShowModalEdit}
-                handleClose = {ShowModalEdit}
-                dataUserEdit = {dataUserEdit}
-                handleEditUserFromModal = {handleEditUserFromModal}
+                show={isShowModalEdit}
+                handleClose={ShowModalEdit}
+                dataUserEdit={dataUserEdit}
+                handleEditUserFromModal={handleEditUserFromModal}
             />
             <ModalConfirm
-                show = {isShowModalDelete}
-                handleClose = {handleClose}
-                dataUserDelete = {dataUserDelete}
-                handleDeleteUserFromModal = {handleDeleteUserFromModal}
+                show={isShowModalDelete}
+                handleClose={handleClose}
+                dataUserDelete={dataUserDelete}
+                handleDeleteUserFromModal={handleDeleteUserFromModal}
             />
             <ReactPaginate
                 breakLabel="..."
